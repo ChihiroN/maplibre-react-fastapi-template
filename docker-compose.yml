@@ -1,0 +1,54 @@
+# sql+fastapi+react
+# https://qiita.com/kamiyama_kkkkk/items/c30528c468f0cadac38
+
+version: "3"
+services:
+  service_fastapi:
+    container_name: fastapi
+    image: server-fastapi
+    build:
+      context: .
+      dockerfile: ./fastapi/Dockerfile
+    environment:
+      NODE_ENV: development
+    ports:
+      - 3001:3001
+    volumes:
+      - ./fastapi:/app
+    restart: always
+    tty: true
+
+  service_front:
+    container_name: front
+    image: front-react
+    build:
+      context: .
+      dockerfile: ./front/Dockerfile
+    environment:
+      NODE_ENV: development
+    ports:
+      - 3000:3000 #react default port
+    volumes:
+      - ./front/app:/usr/src/app
+      # - volume_front:/usr/src/app/node_modules
+    # command: sh -c 'npm start'
+    depends_on:
+    #   # - service_postgres
+      - service_fastapi
+    restart: always
+    # stdin_open: true
+    tty: true
+
+# service:
+#   service_fastapi:
+#     network:
+#   service_front:
+#     network:
+
+# volumes:
+#   volume_front:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: ./front/node_modules
+#       o: bind
